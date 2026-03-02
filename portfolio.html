@@ -154,6 +154,55 @@
             .hero h1 { font-size: 3rem; }
             .nav-links { display: none; }
         }
+
+        /* ========================================================= */
+        /* --- ADDED CODE BELOW FOR PC, TABLET, AND PHONE DEVICES --- */
+        /* ========================================================= */
+        
+        /* Overrides the original display:none for nav-links to keep menu visible on small screens */
+        @media (max-width: 900px) {
+            nav {
+                flex-direction: column;
+                padding: 15px 5%;
+                gap: 15px;
+            }
+            .nav-links {
+                display: flex !important;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            .hero {
+                padding-top: 100px; /* Adjusts for the taller navigation bar */
+            }
+            .projects-controls {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Specific adjustments for Tablets and smaller */
+        @media (max-width: 768px) {
+            section { padding: 60px 5%; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero h2 { font-size: 1.5rem; }
+            .section-title { font-size: 2rem; margin-bottom: 30px; }
+            .about-img { margin: 0 auto; display: block; max-width: 100%; }
+            .info-row { flex-direction: column; gap: 5px; }
+            .info-row span.label { width: 100%; }
+            .contact-grid { gap: 30px; }
+            footer { padding: 50px 5%; text-align: center; }
+        }
+
+        /* Specific adjustments for Phones */
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .hero h2 { font-size: 1.2rem; }
+            .nav-links { gap: 10px; }
+            .nav-links a { font-size: 13px; }
+            .project-grid { grid-template-columns: 1fr; }
+            .timeline-card, .project-card, .skill-card { padding: 20px; }
+            .btn { padding: 12px 25px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>
@@ -450,5 +499,4 @@
         });
     </script>
 </body>
-
 </html>
