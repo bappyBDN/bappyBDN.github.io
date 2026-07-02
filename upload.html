@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write Post | Bappy's Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --indigo: #5b5ef4;
+            --indigo-light: #7b7ef7;
+            --indigo-dark: #4042c9;
+            --indigo-glow: rgba(91,94,244,0.18);
+            --navy: #0d0f1a;
+            --navy-card: #131626;
+            --navy-border: #1e2340;
+            --navy-hover: #1a1f38;
+            --text-primary: #f0f1ff;
+            --text-secondary: #8b90b8;
+            --text-muted: #565c82;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            --radius: 14px; --radius-sm: 8px;
+            --green: #22c55e; --red: #ef4444; --yellow: #f59e0b;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:var(--sans);background:var(--navy);color:var(--text-primary);line-height:1.65;overflow-x:hidden;min-height:100vh;}
+        a{text-decoration:none;color:inherit;}
+
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+
+        /* NAV */
+        nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;background:rgba(13,15,26,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--navy-border);}
+        .nav-logo{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--indigo-light);letter-spacing:.04em;}
+        .nav-logo span{color:var(--text-muted);}
+        .nav-back{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text-secondary);transition:var(--transition);}
+        .nav-back:hover{color:var(--indigo-light);}
+
+        /* LAYOUT */
+        .page-wrap{max-width:860px;margin:0 auto;padding:108px 24px 80px;}
+
+        .page-header{margin-bottom:40px;}
+        .page-header .label{font-family:var(--mono);font-size:11px;color:var(--indigo-light);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
+        .page-header h1{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-.03em;}
+        .page-header p{color:var(--text-secondary);font-size:14px;margin-top:8px;}
+
+        /* TABS: Write vs Upload PDF */
+        .input-tabs{display:flex;gap:8px;margin-bottom:28px;}
+        .input-tab{padding:9px 22px;border-radius:30px;border:1px solid var(--navy-border);background:none;color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);}
+        .input-tab.active,.input-tab:hover{background:var(--indigo);border-color:var(--indigo);color:#fff;}
+
+        /* FORM */
+        .editor-form{display:flex;flex-direction:column;gap:22px;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+        .field{display:flex;flex-direction:column;gap:6px;}
+        .field label{font-family:var(--mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;}
+        .field label span{color:var(--red);margin-left:3px;}
+        .field input,.field select,.field textarea{
+            background:var(--navy-card);border:1px solid var(--navy-border);
+            border-radius:var(--radius-sm);padding:12px 16px;
+            color:var(--text-primary);font-size:14px;font-family:var(--sans);
+            outline:none;transition:var(--transition);
+        }
+        .field input:focus,.field select,.field textarea:focus{border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-glow);}
+        .field input::placeholder,.field textarea::placeholder{color:var(--text-muted);}
+        .field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23565c82'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+        .field select option{background:var(--navy-card);}
+        .field textarea{resize:vertical;min-height:320px;font-family:var(--mono);font-size:13.5px;line-height:1.75;}
+        .char-count{font-family:var(--mono);font-size:10px;color:var(--text-muted);text-align:right;margin-top:4px;}
+
+        /* Tag input */
+        .tag-input-wrap{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:var(--radius-sm);padding:10px 14px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;transition:var(--transition);cursor:text;}
+        .tag-input-wrap:focus-within{border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-glow);}
+        .tag-pill{display:inline-flex;align-items:center;gap:5px;background:var(--indigo-glow);border:1px solid rgba(91,94,244,.35);color:var(--indigo-light);font-family:var(--mono);font-size:11px;padding:3px 10px;border-radius:20px;}
+        .tag-pill button{background:none;border:none;color:inherit;cursor:pointer;font-size:10px;line-height:1;padding:0;opacity:.6;}
+        .tag-pill button:hover{opacity:1;}
+        .tag-real-input{border:none;outline:none;background:none;color:var(--text-primary);font-size:13px;font-family:var(--sans);min-width:120px;flex:1;}
+        .tag-real-input::placeholder{color:var(--text-muted);}
+        .tag-hint{font-family:var(--mono);font-size:10px;color:var(--text-muted);margin-top:4px;}
+
+        /* PDF Upload Zone */
+        .pdf-zone{display:none;border:2px dashed var(--navy-border);border-radius:var(--radius);padding:50px 30px;text-align:center;transition:var(--transition);cursor:pointer;background:var(--navy-card);}
+        .pdf-zone.active-tab{display:block;}
+        .pdf-zone.dragover{border-color:var(--indigo);background:var(--indigo-glow);}
+        .pdf-zone i{font-size:2rem;color:var(--text-muted);margin-bottom:14px;display:block;}
+        .pdf-zone p{color:var(--text-secondary);font-size:14px;margin-bottom:8px;}
+        .pdf-zone small{font-family:var(--mono);font-size:11px;color:var(--text-muted);}
+        .pdf-file-input{display:none;}
+        .pdf-chosen{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--green);}
+        .pdf-preview{margin-top:18px;background:var(--navy);border:1px solid var(--navy-border);border-radius:var(--radius-sm);padding:16px;text-align:left;}
+        .pdf-preview p{font-size:12.5px;color:var(--text-secondary);line-height:1.65;max-height:200px;overflow-y:auto;white-space:pre-wrap;font-family:var(--mono);}
+
+        /* Action bar */
+        .action-bar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--navy-border);}
+        .btn-publish{display:inline-flex;align-items:center;gap:9px;background:var(--indigo);color:#fff;padding:13px 30px;border-radius:var(--radius-sm);font-weight:700;font-size:14px;border:none;cursor:pointer;transition:var(--transition);}
+        .btn-publish:hover{background:var(--indigo-dark);box-shadow:0 6px 22px rgba(91,94,244,.4);transform:translateY(-2px);}
+        .btn-publish:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+        .btn-preview{display:inline-flex;align-items:center;gap:8px;background:none;color:var(--text-secondary);border:1px solid var(--navy-border);padding:12px 22px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;transition:var(--transition);}
+        .btn-preview:hover{border-color:var(--indigo);color:var(--indigo-light);}
+        .btn-export{display:inline-flex;align-items:center;gap:8px;background:none;color:var(--text-muted);border:1px solid var(--navy-border);padding:11px 18px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;transition:var(--transition);margin-left:auto;}
+        .btn-export:hover{color:var(--green);border-color:var(--green);}
+
+        /* Toast */
+        .toast{position:fixed;bottom:30px;right:30px;z-index:999;padding:14px 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:all .35s ease;pointer-events:none;max-width:340px;}
+        .toast.show{transform:translateY(0);opacity:1;}
+        .toast.success{background:#14532d;border:1px solid #22c55e;color:#86efac;}
+        .toast.error{background:#450a0a;border:1px solid #ef4444;color:#fca5a5;}
+        .toast.info{background:#1e1b4b;border:1px solid var(--indigo);color:var(--indigo-light);}
+
+        /* Manage section */
+        .manage-section{margin-top:60px;padding-top:40px;border-top:1px solid var(--navy-border);}
+        .manage-section h3{font-size:1.1rem;font-weight:700;margin-bottom:6px;}
+        .manage-section p{font-size:13px;color:var(--text-secondary);margin-bottom:20px;}
+        .manage-grid{display:flex;gap:12px;flex-wrap:wrap;}
+        .manage-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-sm);border:1px solid var(--navy-border);background:var(--navy-card);font-size:13px;color:var(--text-secondary);cursor:pointer;transition:var(--transition);}
+        .manage-btn:hover{border-color:var(--indigo);color:var(--indigo-light);}
+        .manage-btn.danger:hover{border-color:var(--red);color:#fca5a5;}
+        .posts-list{margin-top:22px;display:flex;flex-direction:column;gap:10px;}
+        .post-row{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:var(--radius-sm);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+        .post-row-info{}
+        .post-row-title{font-size:13.5px;font-weight:600;}
+        .post-row-date{font-family:var(--mono);font-size:10.5px;color:var(--text-muted);margin-top:2px;}
+        .post-row-del{background:none;border:1px solid var(--navy-border);color:var(--text-muted);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:var(--transition);white-space:nowrap;}
+        .post-row-del:hover{border-color:var(--red);color:#fca5a5;}
+        .no-posts{font-size:13px;color:var(--text-muted);font-family:var(--mono);}
+
+        @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo"><span style="color:var(--indigo-light);">bappy</span><span>BDN</span><span style="color:var(--indigo-light);">_</span></a>
+    <a href="blog.html" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+</nav>
+
+<div class="page-wrap">
+    <div class="page-header">
+        <div class="label">Content Studio</div>
+        <h1>Write a New Post</h1>
+        <p>Paste your content or upload a PDF. Posts are saved in your browser and can be exported as JSON to commit to GitHub.</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="input-tabs">
+        <button class="input-tab active" id="tab-write" onclick="switchTab('write')"><i class="fas fa-keyboard" style="margin-right:7px;"></i>Write / Paste</button>
+        <button class="input-tab" id="tab-pdf" onclick="switchTab('pdf')"><i class="fas fa-file-pdf" style="margin-right:7px;"></i>Upload PDF</button>
+    </div>
+
+    <form class="editor-form" onsubmit="publishPost(event)">
+
+        <!-- FIELDS (always visible) -->
+        <div class="form-row">
+            <div class="field" style="grid-column:1/-1;">
+                <label>Post Title <span>*</span></label>
+                <input type="text" id="f-title" placeholder="e.g. FastAPI থেকে LangChain — সহজ গাইড" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field">
+                <label>Topic / Subtitle</label>
+                <input type="text" id="f-topic" placeholder="e.g. Web Development · Python · API">
+            </div>
+            <div class="field">
+                <label>Language</label>
+                <select id="f-lang">
+                    <option value="English">English</option>
+                    <option value="Bengali" selected>Bengali</option>
+                    <option value="English + Bengali">English + Bengali</option>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <label>Summary <span>*</span></label>
+            <input type="text" id="f-summary" placeholder="One-line description shown on blog card…" required>
+        </div>
+        <div class="field">
+            <label>Tags</label>
+            <div class="tag-input-wrap" id="tag-wrap" onclick="document.getElementById('tag-input').focus()">
+                <input type="text" id="tag-input" class="tag-real-input" placeholder="Type a tag and press Enter or comma…" onkeydown="handleTagKey(event)">
+            </div>
+            <div class="tag-hint">Press Enter or , to add · Click × to remove</div>
+        </div>
+
+        <!-- WRITE TAB -->
+        <div id="write-panel">
+            <div class="field">
+                <label>Content <span>*</span></label>
+                <textarea id="f-content" placeholder="Paste or write your full blog post here…&#10;&#10;Supports plain text, code blocks, Bengali or English.&#10;&#10;Tip: Code snippets will be shown in monospace on the blog." oninput="updateCount()"></textarea>
+                <div class="char-count" id="char-count">0 words · ~0 min read</div>
+            </div>
+        </div>
+
+        <!-- PDF TAB -->
+        <div id="pdf-panel" class="pdf-zone" onclick="document.getElementById('pdf-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropPDF(event)">
+            <i class="fas fa-file-pdf"></i>
+            <p>Drag &amp; drop a PDF here, or click to browse</p>
+            <small>PDF text will be extracted and placed into the Content field automatically</small>
+            <div class="pdf-chosen" id="pdf-chosen" onclick="event.stopPropagation()"></div>
+            <div class="pdf-preview" id="pdf-preview" style="display:none;" onclick="event.stopPropagation()">
+                <p id="pdf-preview-text"></p>
+            </div>
+            <input type="file" id="pdf-input" class="pdf-file-input" accept=".pdf,.txt" onchange="handleFile(event)">
+        </div>
+
+        <!-- ACTION BAR -->
+        <div class="action-bar">
+            <button type="submit" class="btn-publish" id="publish-btn">
+                <i class="fas fa-paper-plane"></i> Publish Post
+            </button>
+            <button type="button" class="btn-preview" onclick="previewPost()">
+                <i class="fas fa-eye"></i> Preview
+            </button>
+            <button type="button" class="btn-export" onclick="exportJSON()">
+                <i class="fas fa-download"></i> Export blogs.json
+            </button>
+        </div>
+    </form>
+
+    <!-- MANAGE POSTS -->
+    <div class="manage-section">
+        <h3>Manage Local Posts</h3>
+        <p>These posts are stored in your browser's localStorage. Export as JSON and commit to GitHub to make them permanent.</p>
+        <div class="manage-grid">
+            <button class="manage-btn" onclick="exportJSON()"><i class="fas fa-file-export"></i> Export all as JSON</button>
+            <button class="manage-btn" onclick="importJSON()"><i class="fas fa-file-import"></i> Import JSON</button>
+            <button class="manage-btn danger" onclick="clearAll()"><i class="fas fa-trash"></i> Clear all local posts</button>
+        </div>
+        <div class="posts-list" id="posts-list"></div>
+        <input type="file" id="import-input" accept=".json" style="display:none" onchange="handleImport(event)">
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PREVIEW MODAL -->
+<div id="preview-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);overflow-y:auto;padding:20px;">
+    <div style="max-width:700px;margin:40px auto;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:var(--radius);padding:40px;position:relative;">
+        <button onclick="document.getElementById('preview-modal').style.display='none';document.body.style.overflow=''" style="position:absolute;top:18px;right:18px;background:var(--navy);border:1px solid var(--navy-border);color:var(--text-secondary);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fas fa-times"></i></button>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--indigo-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">PREVIEW</div>
+        <div id="preview-topic" style="font-family:var(--mono);font-size:11px;color:var(--indigo-light);margin-bottom:8px;"></div>
+        <h2 id="preview-title" style="font-size:1.6rem;font-weight:800;letter-spacing:-.025em;margin-bottom:16px;line-height:1.25;"></h2>
+        <div id="preview-tags" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px;"></div>
+        <div id="preview-body" style="color:var(--text-secondary);font-size:15px;line-height:1.85;white-space:pre-wrap;border-top:1px solid var(--navy-border);padding-top:24px;font-family:var(--mono);font-size:13.5px;"></div>
+    </div>
+</div>
+
+<script>
+// ── Tab switching ──
+let currentTab = 'write';
+function switchTab(t) {
+    currentTab = t;
+    document.getElementById('tab-write').classList.toggle('active', t==='write');
+    document.getElementById('tab-pdf').classList.toggle('active', t==='pdf');
+    document.getElementById('write-panel').style.display = t==='write' ? '' : 'none';
+    document.getElementById('pdf-panel').classList.toggle('active-tab', t==='pdf');
+}
+
+// ── Tag management ──
+let tags = [];
+function handleTagKey(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = e.target.value.replace(/,/g,'').trim();
+        if (val && !tags.includes(val)) { tags.push(val); renderTags(); }
+        e.target.value = '';
+    }
+}
+function renderTags() {
+    const wrap = document.getElementById('tag-wrap');
+    wrap.querySelectorAll('.tag-pill').forEach(el => el.remove());
+    tags.forEach((t,i) => {
+        const pill = document.createElement('span');
+        pill.className = 'tag-pill';
+        pill.innerHTML = `${t}<button type="button" onclick="removeTag(${i})">×</button>`;
+        wrap.insertBefore(pill, document.getElementById('tag-input'));
+    });
+}
+function removeTag(i) { tags.splice(i,1); renderTags(); }
+
+// ── Word count ──
+function updateCount() {
+    const words = document.getElementById('f-content').value.trim().split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.ceil(words/200));
+    document.getElementById('char-count').textContent = `${words.toLocaleString()} words · ~${mins} min read`;
+}
+
+// ── PDF / TXT file handling ──
+function dragOver(e) { e.preventDefault(); document.getElementById('pdf-panel').classList.add('dragover'); }
+function dragLeave(e) { document.getElementById('pdf-panel').classList.remove('dragover'); }
+function dropPDF(e) { e.preventDefault(); dragLeave(e); const f = e.dataTransfer.files[0]; if(f) processFile(f); }
+function handleFile(e) { const f = e.target.files[0]; if(f) processFile(f); }
+
+function processFile(file) {
+    const chosen = document.getElementById('pdf-chosen');
+    const preview = document.getElementById('pdf-preview');
+    const previewText = document.getElementById('pdf-preview-text');
+
+    if (file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const text = ev.target.result;
+            document.getElementById('f-content').value = text;
+            updateCount();
+            chosen.textContent = '✓ Loaded: ' + file.name;
+            previewText.textContent = text.substring(0, 600) + (text.length > 600 ? '\n…' : '');
+            preview.style.display = 'block';
+            showToast('Text file loaded! Switch to Write tab to review and edit.', 'success');
+        };
+        reader.readAsText(file, 'UTF-8');
+        return;
+    }
+
+    // PDF — use PDF.js from CDN
+    chosen.textContent = '⏳ Extracting text from PDF…';
+    preview.style.display = 'none';
+
+    const script = document.getElementById('pdfjs-script');
+    if (!script) {
+        const s = document.createElement('script');
+        s.id = 'pdfjs-script';
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        s.onload = () => extractPDF(file, chosen, preview, previewText);
+        document.head.appendChild(s);
+    } else {
+        extractPDF(file, chosen, preview, previewText);
+    }
+}
+
+async function extractPDF(file, chosen, preview, previewText) {
+    try {
+        if (typeof pdfjsLib === 'undefined') { showToast('PDF.js not loaded yet. Try again.','error'); return; }
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const tc = await page.getTextContent();
+            fullText += tc.items.map(s => s.str).join(' ') + '\n';
+        }
+        document.getElementById('f-content').value = fullText.trim();
+        updateCount();
+        chosen.textContent = `✓ Extracted ${pdf.numPages} page(s) from: ${file.name}`;
+        previewText.textContent = fullText.substring(0, 600) + (fullText.length > 600 ? '\n…' : '');
+        preview.style.display = 'block';
+        showToast('PDF extracted! Switch to Write tab to review.', 'success');
+    } catch(err) {
+        chosen.textContent = '✗ Could not extract PDF.';
+        showToast('PDF extraction failed: ' + err.message, 'error');
+    }
+}
+
+// ── Publish ──
+function publishPost(e) {
+    e.preventDefault();
+    const title = document.getElementById('f-title').value.trim();
+    const summary = document.getElementById('f-summary').value.trim();
+    const content = document.getElementById('f-content').value.trim();
+    const topic = document.getElementById('f-topic').value.trim();
+    const lang = document.getElementById('f-lang').value;
+
+    if (!content) { showToast('Content is empty! Write something or upload a PDF first.', 'error'); return; }
+
+    const id = 'blog_' + Date.now();
+    const post = {
+        id, title, topic, summary, content,
+        date: new Date().toISOString().split('T')[0],
+        tags: [...tags],
+        lang,
+        readTime: Math.max(1, Math.ceil(content.split(/\s+/).filter(Boolean).length / 200))
+    };
+
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem('bappy_blogs') || '[]'); } catch(e) {}
+    local.unshift(post);
+    localStorage.setItem('bappy_blogs', JSON.stringify(local));
+
+    showToast('✓ Post published to your blog!', 'success');
+    resetForm();
+    renderPostsList();
+
+    // redirect to blog after 1.5s
+    setTimeout(() => { window.location.href = 'blog.html'; }, 1500);
+}
+
+function resetForm() {
+    ['f-title','f-topic','f-summary','f-content'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-lang').value = 'Bengali';
+    tags = [];
+    renderTags();
+    updateCount();
+    document.getElementById('pdf-chosen').textContent = '';
+    document.getElementById('pdf-preview').style.display = 'none';
+}
+
+// ── Preview ──
+function previewPost() {
+    const title = document.getElementById('f-title').value || '(No title)';
+    const topic = document.getElementById('f-topic').value;
+    const content = document.getElementById('f-content').value || '(No content)';
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-topic').textContent = topic;
+    document.getElementById('preview-body').textContent = content;
+    document.getElementById('preview-tags').innerHTML = tags.map(t=>`<span style="font-family:var(--mono);font-size:10.5px;background:rgba(91,94,244,.15);color:var(--indigo-light);border:1px solid rgba(91,94,244,.3);padding:3px 11px;border-radius:20px;">${t}</span>`).join('');
+    document.getElementById('preview-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// ── Export JSON ──
+function exportJSON() {
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem('bappy_blogs') || '[]'); } catch(e) {}
+
+    // Try to merge with committed blogs.json if already fetched
+    fetch('blogs.json').then(r=>r.json()).then(committed => {
+        const ids = new Set(committed.map(b=>b.id));
+        const merged = [...local.filter(b=>!ids.has(b.id)), ...committed].sort((a,b)=>new Date(b.date)-new Date(a.date));
+        downloadJSON(merged);
+    }).catch(() => downloadJSON(local));
+}
+
+function downloadJSON(data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'blogs.json';
+    a.click();
+    showToast('blogs.json downloaded. Commit it to your GitHub repo to make posts permanent!', 'info');
+}
+
+// ── Import JSON ──
+function importJSON() { document.getElementById('import-input').click(); }
+function handleImport(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (!Array.isArray(data)) throw new Error('Not an array');
+            localStorage.setItem('bappy_blogs', JSON.stringify(data));
+            showToast(`Imported ${data.length} posts successfully!`, 'success');
+            renderPostsList();
+        } catch(err) { showToast('Invalid JSON file.', 'error'); }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+}
+
+// ── Clear all ──
+function clearAll() {
+    if (!confirm('Delete ALL locally stored posts? This cannot be undone.')) return;
+    localStorage.removeItem('bappy_blogs');
+    showToast('All local posts cleared.', 'info');
+    renderPostsList();
+}
+
+// ── Delete single post ──
+function deletePost(id) {
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem('bappy_blogs') || '[]'); } catch(e) {}
+    local = local.filter(b => b.id !== id);
+    localStorage.setItem('bappy_blogs', JSON.stringify(local));
+    showToast('Post deleted.', 'info');
+    renderPostsList();
+}
+
+// ── Render posts list ──
+function renderPostsList() {
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem('bappy_blogs') || '[]'); } catch(e) {}
+    const el = document.getElementById('posts-list');
+    if (local.length === 0) {
+        el.innerHTML = '<p class="no-posts">// No local posts yet</p>';
+        return;
+    }
+    el.innerHTML = local.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(b => `
+        <div class="post-row">
+            <div class="post-row-info">
+                <div class="post-row-title">${b.title}</div>
+                <div class="post-row-date">${b.date} · ${b.lang || ''}</div>
+            </div>
+            <button class="post-row-del" onclick="deletePost('${b.id}')"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+    `).join('');
+}
+
+// ── Toast ──
+function showToast(msg, type='info') {
+    const t = document.getElementById('toast');
+    const icons = {success:'✓', error:'✗', info:'ℹ'};
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// init
+renderPostsList();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "blog_001",
+    "title": "একদম শূন্য থেকে API এবং FastAPI",
+    "topic": "Web Development · FastAPI · API Design",
+    "summary": "API কী, কীভাবে কাজ করে, এবং FastAPI দিয়ে একটি পেশেন্ট ডিরেক্টরি বানানোর হাতে-কলমে গাইড — একদম সহজ বাংলায়।",
+    "content": "আপনি কি কখনো ভেবেছেন, আপনি যখন আপনার স্মার্টফোনে উবার অ্যাপ খুলে গাড়ি ডাকেন, তখন গুগল ম্যাপস কীভাবে সেই অ্যাপের ভেতর কাজ করে?\n\nAPI কী?\nAPI-এর পূণ্যরূপ হলো Application Programming Interface। সহজ কথায়, এটি হলো একটি \"কোড়াষী\" বা \"সেতু\", যো দুটি ভিন্ন সফটওয়্যারকে এনে অপরের সাথে কথা বলতে সাহায্য করে।\n\nরেস্তোরাঁর উদাহরণ:\nআপনি (Client) মেনু দেখে একটি খাবারের অর্ডার দিলেন। কিন্তু আপনি সরাসরি রান্নাঘরে (Server) গিয়ে রাঁধুনিকে বলতে পারবেন না। আপনার এবং রান্নাঘরের মাঝে একজন ওয়েটার আছেন — সেই ওয়েটারই হলো API!\n\nREST API এবং CRUD:\nREST হলো API তৈরির নিয়মকানুন বা স্ট্যান্ডার্ড। আমরা ডেটাবেসের ডেটা নিয়ে মূলত ৪টি কাজ করি:\n• GET (Read): সার্ভার থেকে তথ্য নিয়ে আসা\n• POST (Create): সার্ভারে নতুন তথ্য জমা দেওয়া\n• PUT/PATCH (Update): আগে থেকে থাকা তথ্য আপডেট করা\n• DELETE (Delete): সার্ভার থেকে কোনো ডেটা মুছে ফেলা\n\nasync এবং await:\nযখন আপনার ফ্রন্টএন্ড API-এর কাছে ডেটা চায়, তখন ইন্টারনেট পার হয়ে সেই ডেটা আসতে ১-২ সেকেন্ড সময় লাগতে পারে।\n• async: প্রোগ্রামকে বলে দেয় যে এখানে কিছু কাজ আছে যা শেষ হতে একটু সময় লাগবে\n• await: সার্ভার থেকে পুরোপুরি ডেটা হাতে না আসা পর্যন্ত অপেক্ষা করে\n\nFastAPI প্রজেক্ট উদাহরণ:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Patient(BaseModel):\n    name: str\n    age: int\n    condition: str\n\n@app.get(\"/api/patients\")\nasync def get_patients():\n    return patients_db\n\n@app.post(\"/api/patients\")\nasync def add_patient(patient: Patient):\n    patients_db.append(patient.model_dump())\n    return {\"message\": \"রোগীর তথ্য সেভ হয়েছে!\"}\n\nসারকথা:\nAPI হলো আধুনিক ইন্টারনেটের মেরুদণ্ড। ফ্রন্টএন্ড এবং ব্যাকএন্ডের মাঝে ডেটার আদান-প্রদান কীভাবে হয় এই কনসেপ্টটি বুঝতে পারলেই আপনি একজন সত্যিকারের ফুল-স্ট্যাক ডেভেলপার হয়ে ওঠার পথে অনেক দূর এগিয়ে যাবেন।",
+    "date": "2025-07-03",
+    "tags": ["API", "FastAPI", "Python", "REST", "Web Development"],
+    "lang": "Bengali",
+    "readTime": 5
+  }
+]

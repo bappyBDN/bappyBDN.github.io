@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Bappy Chandra Debnath</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --indigo: #5b5ef4;
+            --indigo-light: #7b7ef7;
+            --indigo-dark: #4042c9;
+            --indigo-glow: rgba(91,94,244,0.18);
+            --navy: #0d0f1a;
+            --navy-card: #131626;
+            --navy-border: #1e2340;
+            --navy-hover: #1a1f38;
+            --text-primary: #f0f1ff;
+            --text-secondary: #8b90b8;
+            --text-muted: #565c82;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            --radius: 14px;
+            --radius-sm: 8px;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--sans); background: var(--navy); color: var(--text-primary); line-height:1.65; overflow-x:hidden; }
+        a { text-decoration:none; color:inherit; }
+        ul { list-style:none; }
+
+        body::before {
+            content:''; position:fixed; inset:0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+            pointer-events:none; z-index:0;
+        }
+
+        /* NAV */
+        nav {
+            position:fixed; top:0; left:0; right:0; z-index:100;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:0 5%; height:68px;
+            background:rgba(13,15,26,0.88); backdrop-filter:blur(18px);
+            border-bottom:1px solid var(--navy-border);
+        }
+        .nav-logo { font-family:var(--mono); font-size:15px; font-weight:600; color:var(--indigo-light); letter-spacing:.04em; }
+        .nav-logo span { color:var(--text-muted); }
+        .nav-links { display:flex; align-items:center; gap:28px; }
+        .nav-links a { font-size:13.5px; font-weight:500; color:var(--text-secondary); transition:var(--transition); }
+        .nav-links a:hover, .nav-links a.active { color:var(--text-primary); }
+        .nav-links a.active { color:var(--indigo-light); }
+        .nav-upload-btn {
+            font-family:var(--mono); font-size:12px; font-weight:600;
+            color:var(--indigo-light); border:1px solid var(--indigo);
+            padding:7px 16px; border-radius:var(--radius-sm);
+            background:var(--indigo-glow); transition:var(--transition); cursor:pointer;
+        }
+        .nav-upload-btn:hover { background:var(--indigo); color:#fff; }
+        .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; }
+        .hamburger span { display:block; width:22px; height:2px; background:var(--text-secondary); border-radius:2px; transition:var(--transition); }
+
+        /* HERO STRIP */
+        .blog-hero {
+            padding:140px 10% 60px;
+            background: linear-gradient(180deg, rgba(91,94,244,0.06) 0%, transparent 100%);
+            border-bottom: 1px solid var(--navy-border);
+        }
+        .blog-hero .label { font-family:var(--mono); font-size:11px; color:var(--indigo-light); letter-spacing:.14em; text-transform:uppercase; margin-bottom:12px; }
+        .blog-hero h1 { font-size:clamp(2rem,4vw,3.2rem); font-weight:800; letter-spacing:-.03em; margin-bottom:10px; }
+        .blog-hero h1 span { color:var(--indigo-light); }
+        .blog-hero p { color:var(--text-secondary); font-size:15px; max-width:520px; line-height:1.75; }
+
+        /* SEARCH + FILTER */
+        .blog-controls {
+            padding:40px 10% 0;
+            display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+        }
+        .search-wrap {
+            position:relative; flex:1; min-width:200px; max-width:360px;
+        }
+        .search-wrap i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px; }
+        .search-wrap input {
+            width:100%; background:var(--navy-card); border:1px solid var(--navy-border);
+            border-radius:var(--radius-sm); padding:10px 14px 10px 38px;
+            color:var(--text-primary); font-size:13.5px; font-family:var(--sans); outline:none;
+            transition:var(--transition);
+        }
+        .search-wrap input:focus { border-color:var(--indigo); box-shadow:0 0 0 3px var(--indigo-glow); }
+        .search-wrap input::placeholder { color:var(--text-muted); }
+
+        .tag-filters { display:flex; gap:8px; flex-wrap:wrap; }
+        .tag-btn {
+            padding:7px 16px; border-radius:30px;
+            border:1px solid var(--navy-border); background:none;
+            color:var(--text-secondary); font-size:12px; font-weight:500;
+            cursor:pointer; transition:var(--transition);
+        }
+        .tag-btn.active, .tag-btn:hover { background:var(--indigo); border-color:var(--indigo); color:#fff; }
+
+        /* BLOG GRID */
+        .blog-grid-wrap { padding:40px 10% 80px; }
+        .blog-count { font-family:var(--mono); font-size:11px; color:var(--text-muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:28px; }
+        .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:22px; }
+
+        .blog-card {
+            background:var(--navy-card); border:1px solid var(--navy-border);
+            border-radius:var(--radius); padding:28px; cursor:pointer;
+            transition:var(--transition); position:relative; overflow:hidden;
+            display:flex; flex-direction:column; gap:12px;
+        }
+        .blog-card::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background:var(--indigo); transform:scaleX(0); transform-origin:left; transition:transform .3s ease;
+        }
+        .blog-card:hover { border-color:rgba(91,94,244,.45); box-shadow:0 8px 32px rgba(91,94,244,.1); transform:translateY(-4px); }
+        .blog-card:hover::before { transform:scaleX(1); }
+
+        .card-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        .card-date { font-family:var(--mono); font-size:10.5px; color:var(--text-muted); }
+        .card-lang {
+            font-family:var(--mono); font-size:10px; padding:3px 9px;
+            border-radius:20px; border:1px solid var(--navy-border);
+            color:var(--text-muted); background:var(--navy);
+        }
+        .card-topic { font-family:var(--mono); font-size:10.5px; color:var(--indigo-light); letter-spacing:.06em; }
+        .blog-card h3 { font-size:1.05rem; font-weight:700; line-height:1.35; }
+        .blog-card p { font-size:13px; color:var(--text-secondary); line-height:1.65; flex:1; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+        .card-tags { display:flex; flex-wrap:wrap; gap:6px; }
+        .card-tag { font-family:var(--mono); font-size:10px; background:var(--navy); color:var(--text-muted); border:1px solid var(--navy-border); padding:3px 9px; border-radius:20px; }
+        .card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+        .read-time { font-family:var(--mono); font-size:10.5px; color:var(--text-muted); }
+        .read-link { font-size:12.5px; color:var(--indigo-light); font-weight:500; display:flex; align-items:center; gap:5px; }
+
+        .empty-state {
+            text-align:center; padding:80px 20px; color:var(--text-muted);
+            grid-column:1/-1;
+        }
+        .empty-state i { font-size:2.5rem; margin-bottom:16px; display:block; opacity:.4; }
+        .empty-state p { font-size:14px; }
+
+        /* MODAL — FULL POST VIEW */
+        .modal-overlay {
+            display:none; position:fixed; inset:0; z-index:200;
+            background:rgba(0,0,0,.75); backdrop-filter:blur(6px);
+            padding:20px; overflow-y:auto;
+            align-items:flex-start; justify-content:center;
+        }
+        .modal-overlay.open { display:flex; }
+        .modal {
+            background:var(--navy-card); border:1px solid var(--navy-border);
+            border-radius:var(--radius); max-width:780px; width:100%;
+            margin:auto; padding:48px; position:relative;
+        }
+        .modal-close {
+            position:absolute; top:20px; right:20px;
+            background:var(--navy); border:1px solid var(--navy-border);
+            color:var(--text-secondary); width:36px; height:36px;
+            border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            font-size:15px; transition:var(--transition);
+        }
+        .modal-close:hover { border-color:var(--indigo); color:var(--text-primary); }
+        .modal-meta { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+        .modal-date { font-family:var(--mono); font-size:11px; color:var(--text-muted); }
+        .modal-lang { font-family:var(--mono); font-size:10px; padding:3px 10px; border-radius:20px; border:1px solid var(--navy-border); color:var(--text-muted); }
+        .modal-readtime { font-family:var(--mono); font-size:11px; color:var(--text-muted); }
+        .modal-topic { font-family:var(--mono); font-size:11px; color:var(--indigo-light); }
+        .modal h2 { font-size:clamp(1.4rem,3vw,2rem); font-weight:800; letter-spacing:-.025em; margin-bottom:10px; line-height:1.25; }
+        .modal-tags { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:28px; }
+        .modal-tags span { font-family:var(--mono); font-size:10.5px; background:var(--navy); color:var(--indigo-light); border:1px solid rgba(91,94,244,.3); padding:4px 11px; border-radius:20px; }
+        .modal-body {
+            color:var(--text-secondary); font-size:15px; line-height:1.85;
+            white-space:pre-wrap; border-top:1px solid var(--navy-border); padding-top:28px;
+        }
+        .modal-body code {
+            font-family:var(--mono); font-size:13px; background:rgba(91,94,244,.1);
+            border:1px solid rgba(91,94,244,.25); border-radius:5px; padding:2px 7px;
+        }
+
+        /* FOOTER */
+        footer {
+            background:#080910; border-top:1px solid var(--navy-border);
+            padding:36px 10%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
+        }
+        .footer-brand { font-family:var(--mono); font-size:13px; color:var(--text-muted); }
+        .footer-brand strong { color:var(--indigo-light); }
+        .footer-socials { display:flex; gap:12px; }
+        .footer-socials a {
+            width:34px; height:34px; border:1px solid var(--navy-border); border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            color:var(--text-muted); font-size:13px; transition:var(--transition);
+        }
+        .footer-socials a:hover { border-color:var(--indigo); color:var(--indigo-light); }
+
+        .fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease; }
+        .fade-up.visible { opacity:1; transform:translateY(0); }
+
+        @media(max-width:720px) {
+            .nav-links { display:none; position:absolute; top:68px; left:0; right:0; background:rgba(13,15,26,.97); backdrop-filter:blur(20px); flex-direction:column; padding:22px 5%; border-bottom:1px solid var(--navy-border); gap:18px; }
+            .nav-links.open { display:flex; }
+            .hamburger { display:flex; }
+            .blog-hero, .blog-controls, .blog-grid-wrap { padding-left:6%; padding-right:6%; }
+            .modal { padding:28px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo"><span style="color:var(--indigo-light);">bappy</span><span>BDN</span><span style="color:var(--indigo-light);">_</span></a>
+    <div class="nav-links" id="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#resources">Resources</a>
+        <a href="blog.html" class="active">Blog</a>
+        <a href="index.html#contact">Contact</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+        <a href="upload.html" class="nav-upload-btn"><i class="fas fa-pen-nib"></i> &nbsp;Write Post</a>
+        <div class="hamburger" id="hamburger" onclick="document.getElementById('nav-menu').classList.toggle('open')">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="blog-hero">
+    <div class="label">Writing & Learning</div>
+    <h1>Dev <span>Blog</span></h1>
+    <p>Notes on AI engineering, LLM systems, deep learning, and full-stack development — in Bengali and English.</p>
+</div>
+
+<!-- CONTROLS -->
+<div class="blog-controls fade-up">
+    <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Search posts..." oninput="renderBlogs()">
+    </div>
+    <div class="tag-filters" id="tag-filters">
+        <button class="tag-btn active" data-tag="all" onclick="setTag('all',this)">All</button>
+    </div>
+</div>
+
+<!-- BLOG GRID -->
+<div class="blog-grid-wrap">
+    <div class="blog-count" id="blog-count"></div>
+    <div class="blog-grid" id="blog-grid"></div>
+</div>
+
+<!-- POST MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+    <div class="modal" id="modal-content">
+        <button class="modal-close" onclick="closeModalBtn()"><i class="fas fa-times"></i></button>
+        <div class="modal-meta">
+            <span class="modal-date" id="m-date"></span>
+            <span class="modal-lang" id="m-lang"></span>
+            <span class="modal-readtime" id="m-read"></span>
+        </div>
+        <div class="modal-topic" id="m-topic"></div>
+        <h2 id="m-title"></h2>
+        <div class="modal-tags" id="m-tags"></div>
+        <div class="modal-body" id="m-body"></div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-brand"><strong>bappyBDN</strong> · Building the future with AI &amp; Code.</div>
+    <div class="footer-socials">
+        <a href="https://github.com/bappyBDN" target="_blank"><i class="fab fa-github"></i></a>
+        <a href="https://linkedin.com/in/bappy-chandra-debnath-3263063b9" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a href="https://www.facebook.com/bapp.nath.7" target="_blank"><i class="fab fa-facebook"></i></a>
+    </div>
+</footer>
+
+<script>
+// ── Data layer ──
+// Loads from localStorage first (posts uploaded via upload.html),
+// then merges with blogs.json (committed posts) — newest first.
+
+let allBlogs = [];
+let activeTag = 'all';
+
+async function loadBlogs() {
+    // 1. Fetch committed blogs.json
+    let committed = [];
+    try {
+        const res = await fetch('blogs.json?t=' + Date.now());
+        if (res.ok) committed = await res.json();
+    } catch(e) { console.warn('blogs.json not found, using localStorage only'); }
+
+    // 2. Get locally uploaded posts
+    let local = [];
+    try { local = JSON.parse(localStorage.getItem('bappy_blogs') || '[]'); } catch(e) {}
+
+    // 3. Merge: local takes priority (dedupe by id)
+    const committed_ids = new Set(committed.map(b => b.id));
+    const extra = local.filter(b => !committed_ids.has(b.id));
+    allBlogs = [...extra, ...committed].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    buildTagFilters();
+    renderBlogs();
+}
+
+function buildTagFilters() {
+    const tagSet = new Set(['all']);
+    allBlogs.forEach(b => (b.tags || []).forEach(t => tagSet.add(t)));
+    const container = document.getElementById('tag-filters');
+    container.innerHTML = '';
+    tagSet.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'tag-btn' + (tag === 'all' ? ' active' : '');
+        btn.dataset.tag = tag;
+        btn.textContent = tag === 'all' ? 'All' : tag;
+        btn.onclick = () => setTag(tag, btn);
+        container.appendChild(btn);
+    });
+}
+
+function setTag(tag, btn) {
+    activeTag = tag;
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBlogs();
+}
+
+function renderBlogs() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const grid = document.getElementById('blog-grid');
+    const countEl = document.getElementById('blog-count');
+
+    const filtered = allBlogs.filter(b => {
+        const matchTag = activeTag === 'all' || (b.tags || []).includes(activeTag);
+        const matchQ = !q || b.title.toLowerCase().includes(q) || (b.summary||'').toLowerCase().includes(q) || (b.content||'').toLowerCase().includes(q) || (b.tags||[]).some(t=>t.toLowerCase().includes(q));
+        return matchTag && matchQ;
+    });
+
+    countEl.textContent = filtered.length + ' post' + (filtered.length !== 1 ? 's' : '');
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><i class="fas fa-pen-nib"></i><p>No posts yet. <a href="upload.html" style="color:var(--indigo-light)">Write the first one →</a></p></div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(b => `
+        <div class="blog-card fade-up" onclick="openPost('${b.id}')">
+            <div class="card-meta">
+                <span class="card-date"><i class="far fa-calendar-alt" style="margin-right:5px;"></i>${formatDate(b.date)}</span>
+                ${b.lang ? `<span class="card-lang">${b.lang}</span>` : ''}
+            </div>
+            <div class="card-topic">${b.topic || ''}</div>
+            <h3>${b.title}</h3>
+            <p>${b.summary || b.content.substring(0,160) + '…'}</p>
+            <div class="card-tags">${(b.tags||[]).slice(0,4).map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+            <div class="card-footer">
+                <span class="read-time"><i class="far fa-clock" style="margin-right:4px;"></i>${b.readTime || estimateRead(b.content)} min read</span>
+                <span class="read-link">Read post <i class="fas fa-arrow-right" style="font-size:10px;"></i></span>
+            </div>
+        </div>
+    `).join('');
+
+    // animate cards
+    requestAnimationFrame(() => {
+        document.querySelectorAll('.blog-card.fade-up').forEach((el,i) => {
+            setTimeout(() => el.classList.add('visible'), i * 60);
+        });
+    });
+}
+
+function openPost(id) {
+    const b = allBlogs.find(x => x.id === id);
+    if (!b) return;
+    document.getElementById('m-date').textContent = formatDate(b.date);
+    document.getElementById('m-lang').textContent = b.lang || '';
+    document.getElementById('m-read').textContent = (b.readTime || estimateRead(b.content)) + ' min read';
+    document.getElementById('m-topic').textContent = b.topic || '';
+    document.getElementById('m-title').textContent = b.title;
+    document.getElementById('m-tags').innerHTML = (b.tags||[]).map(t=>`<span>${t}</span>`).join('');
+    document.getElementById('m-body').textContent = b.content;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+    if (e.target === document.getElementById('modal')) closeModalBtn();
+}
+function closeModalBtn() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+
+function formatDate(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+}
+function estimateRead(text) {
+    return Math.max(1, Math.ceil((text||'').split(/\s+/).length / 200));
+}
+
+// scroll fade
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });
+},{threshold:.08});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+loadBlogs();
+</script>
+</body>
+</html>
